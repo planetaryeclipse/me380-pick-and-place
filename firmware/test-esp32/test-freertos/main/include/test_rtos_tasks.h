@@ -4,5 +4,6 @@
 void blink_task(void *arg);
 void encoder_read_task(void *arg);
 void servo_test_task(void *arg);
+void stepper_test_task(void *args);
 
 #endif
