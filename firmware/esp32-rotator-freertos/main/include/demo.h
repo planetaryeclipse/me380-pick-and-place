@@ -1,0 +1,19 @@
+#ifndef DEMO_H
+#define DEMO_H
+
+#define SERVO_MIN_PULSEWIDTH_US 1000
+#define SERVO_MAX_PULSEWIDTH_US 2000
+
+#define SERVO_MIN_ANG -60
+#define SERVO_MAX_ANG 60
+
+#define SERVO_TIMEBASE_RESOLUTION_HZ 1000000
+#define SERVO_TIMEBASE_PERIOD 20000
+
+#define SERVO_PULSE_GPIO_0 25
+#define SERVO_PULSE_GPIO_1 26
+#define SERVO_PULSE_GPIO_2 27
+
+void demo_lifting_task(void *arg);
+
+#endif
