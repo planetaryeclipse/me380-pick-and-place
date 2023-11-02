@@ -9,6 +9,9 @@
 #include "driver/uart.h"
 #include "driver/i2c.h"
 
+#include "rom/ets_sys.h"
+#include "esp_intr_alloc.h"
+
 #include "pinouts.h"
 
 #define BLINK_LOG_TAG "blink-task"
@@ -44,6 +47,8 @@ void blink_task(void *)
 
 #define I2C_MASTER_TIMEOUT_MS 1000
 
+#define ESP_INTR_FLAG_DEFAULT 0
+
 void setup_peripheral_comms()
 {
     // Sets up I2C communication on port 0
@@ -59,6 +64,10 @@ void setup_peripheral_comms()
         .clk_flags = 0};
     ESP_ERROR_CHECK(i2c_param_config(i2c_master_port, &i2c_master_cfg));
     ESP_ERROR_CHECK(i2c_driver_install(i2c_master_port, i2c_master_cfg.mode, I2C_MASTER_RX_BUF_DISABLE, I2C_MASTER_TX_BUF_DISABLE, 0));
+
+    // Setup individual ISRs for different GPIO pins
+    ESP_ERROR_CHECK(gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT));
+
 }
 
 #define REG_SET 1
@@ -151,10 +160,89 @@ void read_color_sensor(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
     *b = (als_readings[7] << 8) | als_readings[6];
 }
 
+
+#define DEVICE_SAFTEY_TAG_NAME "device-safety"
+#define AUTOHOMING_TAG_NAME "autohoming"
+
+typedef enum arm_limit_switch_loc {
+    ARM1_INNER,
+    ARM1_OUTER,
+    ARM2_INNER,
+    ARM2_OUTER,
+    ARM3_INNER,
+    ARM3_OUTER
+} arm_limit_switch_loc;
+
+void isr_homing_limit_switch(void* arg){
+    ESP_EARLY_LOGI(AUTOHOMING_TAG_NAME, "Homing limit switch triggered");
+}
+
+void isr_arm_limit_switch(void* arg){
+    arm_limit_switch_loc loc = (arm_limit_switch_loc)arg;
+    switch(loc){
+        case ARM1_INNER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_INNER limit switch triggered");
+            break;
+        }
+        case ARM1_OUTER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_OUTER limit switch triggered");
+            break;
+        }
+        case ARM2_INNER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_INNER limit switch triggered");
+            break;
+        }
+        case ARM2_OUTER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_OUTER limit switch triggered");
+            break;
+        }
+        case ARM3_INNER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_INNER limit switch triggered");
+            break;
+        }
+        case ARM3_OUTER: {
+            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_OUTER limit switch triggered");
+            break;
+        }
+    }
+}
+
+static inline void setup_arm_switch(uint8_t pin, arm_limit_switch_loc loc){
+    gpio_config_t arm_lim_swch = {
+        .intr_type = GPIO_INTR_NEGEDGE,
+        .mode = GPIO_MODE_INPUT,
+        .pin_bit_mask = PIN_BITMASK(pin),
+        .pull_up_en = true,
+        .pull_down_en = false};
+    gpio_config(&arm_lim_swch);
+    gpio_isr_handler_add(pin, isr_arm_limit_switch, (void*)loc);
+}
+
+void setup_limit_switches(){
+    gpio_config_t homing_lim_swch = {
+        .intr_type = GPIO_INTR_NEGEDGE,
+        .mode = GPIO_MODE_INPUT,
+        .pin_bit_mask = PIN_BITMASK(HOMING_LIM_SWCH_PIN),
+        .pull_up_en = true,
+        .pull_down_en = false};
+    gpio_config(&homing_lim_swch);
+    gpio_isr_handler_add(HOMING_LIM_SWCH_PIN, isr_homing_limit_switch, NULL);
+
+    setup_arm_switch(ARM1_INNER_LIM_SWCH_PIN, ARM1_INNER);
+    setup_arm_switch(ARM1_OUTER_LIM_SWCH_PIN, ARM1_OUTER);
+
+    setup_arm_switch(ARM2_INNER_LIM_SWCH_PIN, ARM2_INNER);
+    setup_arm_switch(ARM2_OUTER_LIM_SWCH_PIN, ARM2_OUTER);
+    
+    setup_arm_switch(ARM3_INNER_LIM_SWCH_PIN, ARM3_INNER);
+    setup_arm_switch(ARM3_OUTER_LIM_SWCH_PIN, ARM3_OUTER);
+}
+
 void test_read_sensors_task(void *)
 {
     // Setup sensors
     setup_color_sensor();
+    setup_limit_switches();
 
     // Color sensor readings
     uint16_t c, r, g, b;
