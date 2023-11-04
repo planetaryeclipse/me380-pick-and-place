@@ -68,7 +68,6 @@ void setup_peripheral_comms()
 
     // Setup individual ISRs for different GPIO pins
     ESP_ERROR_CHECK(gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT));
-
 }
 
 #define REG_SET 1
@@ -161,11 +160,11 @@ void read_color_sensor(uint16_t *c, uint16_t *r, uint16_t *g, uint16_t *b)
     *b = (als_readings[7] << 8) | als_readings[6];
 }
 
-
 #define DEVICE_SAFTEY_TAG_NAME "device-safety"
 #define AUTOHOMING_TAG_NAME "autohoming"
 
-typedef enum arm_limit_switch_loc {
+typedef enum arm_limit_switch_loc
+{
     ARM1_INNER,
     ARM1_OUTER,
     ARM2_INNER,
@@ -174,41 +173,51 @@ typedef enum arm_limit_switch_loc {
     ARM3_OUTER
 } arm_limit_switch_loc;
 
-void isr_homing_limit_switch(void* arg){
+void isr_homing_limit_switch(void *arg)
+{
     ESP_EARLY_LOGI(AUTOHOMING_TAG_NAME, "Homing limit switch triggered");
 }
 
-void isr_arm_limit_switch(void* arg){
+void isr_arm_limit_switch(void *arg)
+{
     arm_limit_switch_loc loc = (arm_limit_switch_loc)arg;
-    switch(loc){
-        case ARM1_INNER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_INNER limit switch triggered");
-            break;
-        }
-        case ARM1_OUTER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_OUTER limit switch triggered");
-            break;
-        }
-        case ARM2_INNER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_INNER limit switch triggered");
-            break;
-        }
-        case ARM2_OUTER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_OUTER limit switch triggered");
-            break;
-        }
-        case ARM3_INNER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_INNER limit switch triggered");
-            break;
-        }
-        case ARM3_OUTER: {
-            ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_OUTER limit switch triggered");
-            break;
-        }
+    switch (loc)
+    {
+    case ARM1_INNER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_INNER limit switch triggered");
+        break;
+    }
+    case ARM1_OUTER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM1_OUTER limit switch triggered");
+        break;
+    }
+    case ARM2_INNER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_INNER limit switch triggered");
+        break;
+    }
+    case ARM2_OUTER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM2_OUTER limit switch triggered");
+        break;
+    }
+    case ARM3_INNER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_INNER limit switch triggered");
+        break;
+    }
+    case ARM3_OUTER:
+    {
+        ESP_EARLY_LOGI(DEVICE_SAFTEY_TAG_NAME, "ARM3_OUTER limit switch triggered");
+        break;
+    }
     }
 }
 
-static inline void setup_arm_switch(uint8_t pin, arm_limit_switch_loc loc){
+static inline void setup_arm_switch(uint8_t pin, arm_limit_switch_loc loc)
+{
     gpio_config_t arm_lim_swch = {
         .intr_type = GPIO_INTR_NEGEDGE,
         .mode = GPIO_MODE_INPUT,
@@ -216,10 +225,11 @@ static inline void setup_arm_switch(uint8_t pin, arm_limit_switch_loc loc){
         .pull_up_en = true,
         .pull_down_en = false};
     gpio_config(&arm_lim_swch);
-    gpio_isr_handler_add(pin, isr_arm_limit_switch, (void*)loc);
+    gpio_isr_handler_add(pin, isr_arm_limit_switch, (void *)loc);
 }
 
-void setup_limit_switches(){
+void setup_limit_switches()
+{
     gpio_config_t homing_lim_swch = {
         .intr_type = GPIO_INTR_NEGEDGE,
         .mode = GPIO_MODE_INPUT,
@@ -234,7 +244,7 @@ void setup_limit_switches(){
 
     setup_arm_switch(ARM2_INNER_LIM_SWCH_PIN, ARM2_INNER);
     setup_arm_switch(ARM2_OUTER_LIM_SWCH_PIN, ARM2_OUTER);
-    
+
     setup_arm_switch(ARM3_INNER_LIM_SWCH_PIN, ARM3_INNER);
     setup_arm_switch(ARM3_OUTER_LIM_SWCH_PIN, ARM3_OUTER);
 }
@@ -251,29 +261,33 @@ void setup_limit_switches(){
 int64_t ultrasonic_echo_start_us;
 QueueHandle_t ultrasonic_distances;
 
-void isr_ultrasonic_echo(void* arg){
+void isr_ultrasonic_echo(void *arg)
+{
     // Due to decreased allowable stack sizes in ISRs there is no possible way to output
     // the distance value in this function. This is handled by the reading location.
 
-    if (gpio_get_level(ULTRASONIC_ECHO_PIN)){
+    if (gpio_get_level(ULTRASONIC_ECHO_PIN))
+    {
         // Record time at the start of the echo pulse
         ultrasonic_echo_start_us = esp_timer_get_time();
-    } else {
+    }
+    else
+    {
         int64_t fly_time_us = esp_timer_get_time() - ultrasonic_echo_start_us;
         float dist = (float)fly_time_us / 1e6 * GROUND_LEVEL_SOUND_VEL / 2.0;
 
-        xQueueSendFromISR(ultrasonic_distances, (void*)&dist, NULL);
+        xQueueSendFromISR(ultrasonic_distances, (void *)&dist, NULL);
     }
 }
 
-void setup_ultrasonic(){
+void setup_ultrasonic()
+{
     gpio_config_t trig_gpio_cfg = {
         .intr_type = GPIO_INTR_DISABLE,
         .mode = GPIO_MODE_OUTPUT,
         .pin_bit_mask = PIN_BITMASK(ULTRASONIC_TRIG_PIN),
         .pull_down_en = true,
-        .pull_up_en = false
-    };
+        .pull_up_en = false};
     gpio_config(&trig_gpio_cfg);
 
     gpio_config_t echo_gpio_cfg = {
@@ -281,21 +295,22 @@ void setup_ultrasonic(){
         .mode = GPIO_MODE_INPUT,
         .pin_bit_mask = PIN_BITMASK(ULTRASONIC_ECHO_PIN),
         .pull_down_en = true,
-        .pull_up_en = false
-    };
+        .pull_up_en = false};
     gpio_config(&echo_gpio_cfg);
     gpio_isr_handler_add(ULTRASONIC_ECHO_PIN, isr_ultrasonic_echo, NULL);
 
     ultrasonic_distances = xQueueCreate(ULTRASONIC_QUEUE_SIZE, sizeof(float));
 }
 
-void trig_ultrasonic_scan(){
+void trig_ultrasonic_scan()
+{
     gpio_set_level(ULTRASONIC_TRIG_PIN, true);
     ets_delay_us(ULTRASONIC_TRIG_DURATION_US);
     gpio_set_level(ULTRASONIC_TRIG_PIN, false);
 }
 
-float read_distance(){
+float read_distance()
+{
     trig_ultrasonic_scan();
 
     float dist = -1;
@@ -319,12 +334,12 @@ void test_read_sensors_task(void *)
     {
         // Periodically read sensors
         read_color_sensor(&c, &r, &g, &b);
-        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
-        
-        ultrasonic_dist = read_distance();
-        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
+        // ESP_LOGI(SENSOR_TEST_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
 
-        /* 
+        ultrasonic_dist = read_distance();
+        // ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
+
+        /*
         Alternative polling code
 
         trig_ultrasonic_scan();
@@ -334,6 +349,156 @@ void test_read_sensors_task(void *)
         */
 
         vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+// Microstep driver
+
+typedef enum microstep_resol_t
+{
+    FULL_STEP,
+    HALF_STEP,
+    QUARTER_STEP,
+    EIGHTH_STEP,
+    SIXTEENTH_STEP
+} microstep_resol_t;
+
+// Minimum pulse width for both high and low are 1 us
+#define STEPPER_HIGH_PULSE_WIDTH_US 1000
+#define STEPPER_LOW_PULSE_WIDTH_US 1000
+
+void setup_stepper(microstep_resol_t resol)
+{
+    // Sets up all the GPIO pins necesary to communicate with the board
+    gpio_config_t direction_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_DIRECTION_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&direction_gpio_cfg);
+
+    gpio_config_t step_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_STEP_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&step_gpio_cfg);
+
+    gpio_config_t sleep_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_SLEEP_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&sleep_gpio_cfg);
+
+    gpio_config_t reset_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_RESET_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&reset_gpio_cfg);
+
+    gpio_config_t ms3_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_MS3_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&ms3_gpio_cfg);
+
+    gpio_config_t ms2_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_MS2_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&ms2_gpio_cfg);
+
+    gpio_config_t ms1_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_MS1_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&ms1_gpio_cfg);
+
+    gpio_config_t enable_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_ENABLE_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&enable_gpio_cfg);
+
+    // Sets the stepper pins to be ready to accept commands
+    gpio_set_level(STEPPER_SLEEP_PIN, true);
+    gpio_set_level(STEPPER_RESET_PIN, true);
+    switch (resol)
+    {
+    case FULL_STEP:
+    {
+        gpio_set_level(STEPPER_MS1_PIN, false);
+        gpio_set_level(STEPPER_MS2_PIN, false);
+        gpio_set_level(STEPPER_MS3_PIN, false);
+        break;
+    }
+    case HALF_STEP:
+    {
+        gpio_set_level(STEPPER_MS1_PIN, true);
+        gpio_set_level(STEPPER_MS2_PIN, false);
+        gpio_set_level(STEPPER_MS3_PIN, false);
+        break;
+    }
+    case QUARTER_STEP:
+    {
+        gpio_set_level(STEPPER_MS1_PIN, false);
+        gpio_set_level(STEPPER_MS2_PIN, true);
+        gpio_set_level(STEPPER_MS3_PIN, false);
+        break;
+    }
+    case EIGHTH_STEP:
+    {
+        gpio_set_level(STEPPER_MS1_PIN, true);
+        gpio_set_level(STEPPER_MS2_PIN, true);
+        gpio_set_level(STEPPER_MS3_PIN, false);
+        break;
+    }
+    case SIXTEENTH_STEP:
+    {
+        gpio_set_level(STEPPER_MS1_PIN, true);
+        gpio_set_level(STEPPER_MS2_PIN, true);
+        gpio_set_level(STEPPER_MS3_PIN, true);
+        break;
+    }
+    }
+    gpio_set_level(STEPPER_ENABLE_PIN, false);
+}
+
+void rotate_stepper(uint16_t steps, bool fw_dir)
+{
+    gpio_set_level(STEPPER_DIRECTION_PIN, fw_dir);
+    for (int i = 0; i < steps; i++)
+    {
+        gpio_set_level(STEPPER_STEP_PIN, true);
+        ets_delay_us(STEPPER_HIGH_PULSE_WIDTH_US);
+        gpio_set_level(STEPPER_STEP_PIN, false);
+        ets_delay_us(STEPPER_LOW_PULSE_WIDTH_US);
+    }
+}
+
+void test_stepper_task(void *)
+{
+    setup_stepper(FULL_STEP);
+
+    while (1)
+    {
+        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Sending steps!");
+        rotate_stepper(200, true);
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }
 
@@ -347,4 +512,5 @@ void app_main(void)
     // Initializes tasks
     xTaskCreate(blink_task, "Blink", 4096, NULL, 0, NULL);
     xTaskCreate(test_read_sensors_task, "ReadSensorsTest", 4096, NULL, 0, NULL);
+    xTaskCreate(test_stepper_task, "StepperTest", 4096, NULL, 0, NULL);
 }
