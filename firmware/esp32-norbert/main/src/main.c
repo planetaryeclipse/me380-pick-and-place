@@ -13,6 +13,12 @@
 #include "esp_intr_alloc.h"
 #include "esp_timer.h"
 
+#include "esp_adc/adc_oneshot.h"
+#include "esp_adc/adc_cali.h"
+#include "esp_adc/adc_cali_scheme.h"
+
+// #include "driver/adc.h"
+
 #include "pinouts.h"
 
 #define BLINK_LOG_TAG "blink-task"
@@ -50,6 +56,9 @@ void blink_task(void *)
 
 #define ESP_INTR_FLAG_DEFAULT 0
 
+adc_oneshot_unit_handle_t adc2_handle;
+adc_cali_handle_t adc2_cali_chan0_handle;
+
 void setup_peripheral_comms()
 {
     // Sets up I2C communication on port 0
@@ -68,6 +77,45 @@ void setup_peripheral_comms()
 
     // Setup individual ISRs for different GPIO pins
     ESP_ERROR_CHECK(gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT));
+
+    // Setup the ADC
+    adc_oneshot_unit_init_cfg_t adc2_init_cfg = {
+        .unit_id = ADC_UNIT_2,
+        .ulp_mode = ADC_ULP_MODE_DISABLE,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&adc2_init_cfg, &adc2_handle));
+
+    adc_oneshot_chan_cfg_t adc2_ch_cfg = {
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+        .atten = ADC_ATTEN_DB_11
+    };
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc2_handle, ADC_CHANNEL_0, &adc2_ch_cfg));
+
+    adc2_cali_chan0_handle = NULL;
+#if ADC_CALI_SCHEME_CURVE_FITTING_SUPPORTED
+    adc_cali_curve_fitting_config_t cali_cfg = {
+        .unit_id = ADC_UNIT_2,
+        .chan = ADC_CHANNEL_0,
+        .atten = ADC_ATTEN_DB_11,
+        .bitwidth = ADC_BITWIDTH_DEFAULT
+    };
+    ESP_ERROR_CHECK(adc_cali_create_scheme_linefitting(&cali_cfg, &adc2_cali_chan0_handle));
+#elif ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
+    adc_cali_line_fitting_config_t cali_cfg = {
+        .unit_id = ADC_UNIT_2,
+        .atten = ADC_ATTEN_DB_11,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+    ESP_ERROR_CHECK(adc_cali_create_scheme_line_fitting(&cali_cfg, &adc2_cali_chan0_handle));
+#endif
+
+    // Sets measurable input voltage range from 150 mV to 2450 mV
+    // FOR SOME REASON GPIO4 CORRESPONDS TO ADC_CHANNEL_0
+    // int gpio_num = -1;
+    // adc2_pad_get_io_num(ADC_CHANNEL_0, &gpio_num);
+    // ESP_LOGI(PERIPHERAL_SETUP_TAG_NAME, "**** CORRESPONDING ADC GPIO: %i", gpio_num);
+
+    // adc2_config_channel_atten(ADC_CHANNEL_0, ADC_ATTEN_DB_11);
 }
 
 #define REG_SET 1
@@ -330,6 +378,9 @@ void test_read_sensors_task(void *)
 
     float ultrasonic_dist;
 
+    int adc_raw = 0;
+    int voltage = 0;
+
     while (1)
     {
         // Periodically read sensors
@@ -338,6 +389,13 @@ void test_read_sensors_task(void *)
 
         ultrasonic_dist = read_distance();
         // ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
+
+        ESP_ERROR_CHECK(adc_oneshot_read(adc2_handle, ADC_CHANNEL_0, &adc_raw));
+        ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc2_cali_chan0_handle, adc_raw, &voltage));
+        ESP_LOGI(SENSOR_TEST_TAG_NAME, "ADC voltage reading: %i mV", voltage);
+
+        // ESP_ERROR_CHECK(adc2_get_raw(ADC_CHANNEL_0, ADC_WIDTH_BIT_12, &adc_reading));
+        // ESP_LOGI(SENSOR_TEST_TAG_NAME, "ADC reading: %i", adc_reading);
 
         /*
         Alternative polling code
@@ -348,7 +406,7 @@ void test_read_sensors_task(void *)
         }
         */
 
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(50));
     }
 }
 
@@ -498,9 +556,11 @@ void test_stepper_task(void *)
     {
         ESP_LOGI(SENSOR_TEST_TAG_NAME, "Sending steps!");
         rotate_stepper(200, true);
-        vTaskDelay(pdMS_TO_TICKS(2000));
+        vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
+
+// ACS723 Current Sensor
 
 void app_main(void)
 {
