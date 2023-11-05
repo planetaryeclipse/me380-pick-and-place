@@ -87,8 +87,7 @@ void setup_peripheral_comms()
 
     adc_oneshot_chan_cfg_t adc2_ch_cfg = {
         .bitwidth = ADC_BITWIDTH_DEFAULT,
-        .atten = ADC_ATTEN_DB_11
-    };
+        .atten = ADC_ATTEN_DB_11};
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc2_handle, ADC_CHANNEL_0, &adc2_ch_cfg));
 
     adc2_cali_chan0_handle = NULL;
@@ -97,8 +96,7 @@ void setup_peripheral_comms()
         .unit_id = ADC_UNIT_2,
         .chan = ADC_CHANNEL_0,
         .atten = ADC_ATTEN_DB_11,
-        .bitwidth = ADC_BITWIDTH_DEFAULT
-    };
+        .bitwidth = ADC_BITWIDTH_DEFAULT};
     ESP_ERROR_CHECK(adc_cali_create_scheme_linefitting(&cali_cfg, &adc2_cali_chan0_handle));
 #elif ADC_CALI_SCHEME_LINE_FITTING_SUPPORTED
     adc_cali_line_fitting_config_t cali_cfg = {
@@ -385,10 +383,10 @@ void test_read_sensors_task(void *)
     {
         // Periodically read sensors
         read_color_sensor(&c, &r, &g, &b);
-        // ESP_LOGI(SENSOR_TEST_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
+        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
 
         ultrasonic_dist = read_distance();
-        // ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
+        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
 
         ESP_ERROR_CHECK(adc_oneshot_read(adc2_handle, ADC_CHANNEL_0, &adc_raw));
         ESP_ERROR_CHECK(adc_cali_raw_to_voltage(adc2_cali_chan0_handle, adc_raw, &voltage));
@@ -406,7 +404,7 @@ void test_read_sensors_task(void *)
         }
         */
 
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
@@ -560,7 +558,132 @@ void test_stepper_task(void *)
     }
 }
 
-// ACS723 Current Sensor
+// ACS723 Current sensor
+// Device operation is passive but input is read through the ADC
+
+// Servo driver board (PCA9685)
+
+#define SERVO_I2C_ADDR 0x40
+
+#define SERVO_MODE1_REG 0x00
+#define SERVO_MODE2_REG 0x01
+
+#define SERVO_PRESCALE_REG 0xFE
+
+#define SERVO_LED0_ON_L_REG 0x06
+
+#define SERVO_INT_CLK_FREQ 25e6
+
+void setup_servo_driver(int freq)
+{
+    /*
+
+     uint8_t write_buf[] = {
+            COLOR_ENABLE,
+            MAKE_BYTE(
+                REG_CLEAR, // reserved, set as 0
+                REG_CLEAR, // keep gestures off
+                REG_CLEAR, // keep proximity interrupt off
+                REG_CLEAR, // keep ALS interrupt off
+                REG_CLEAR, // disable wait timer
+                REG_CLEAR, // disable proximity detection
+                REG_SET,   // enable the ALS
+                REG_SET    // power on the device
+                )};
+        i2c_master_write_to_device(I2C_MASTER_NUM, COLOR_I2C_ADDR, write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+        write_buf[0] = COLOR_CONTROL;
+        write_buf[1] = MAKE_BYTE(
+            REG_CLEAR, // Sets LED drive strength at minimum
+            REG_CLEAR,
+            REG_CLEAR, // reserved
+            REG_CLEAR, // reserved
+            REG_CLEAR, // Sets proximity gain control at minimum
+            REG_CLEAR,
+            REG_SET, // Sets ALS and color gain control at maximum of 64x
+            REG_SET);
+        i2c_master_write_to_device(I2C_MASTER_NUM, COLOR_I2C_ADDR, write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+    */
+
+    // Enables sleep mode to change the prescale
+    uint8_t mode1_write_buf[] = {
+        SERVO_MODE1_REG,
+        MAKE_BYTE(
+            REG_CLEAR, // disables restart logic
+            REG_CLEAR, // uses the internal clock
+            REG_SET,   // uses register auto-increment
+            REG_SET,   // sets to sleep mode (to change prescaler)
+            REG_CLEAR, // does not respond to I2C subaddress 1
+            REG_CLEAR, // does not respond to I2C subaddress 2
+            REG_CLEAR, // does not respond to I2C subaddress 3,
+            REG_CLEAR  // does not respond to I2C all call address
+            )};
+    i2c_master_write_to_device(I2C_MASTER_NUM, SERVO_I2C_ADDR, mode1_write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+    // Changes the total period for a full PWM cycle (essentially remaps the 4096 counter
+    // region onto a small time duration set by the frequency)
+    uint8_t prescale_write_buf[] = {
+        SERVO_PRESCALE_REG,
+        round((double)SERVO_INT_CLK_FREQ / (4096.0 * freq)) - 1};
+    i2c_master_write_to_device(I2C_MASTER_NUM, SERVO_I2C_ADDR, &prescale_write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+    // Disables sleep mode to be able to generate outputs
+    mode1_write_buf[1] ^= REG_SET << 4;
+    i2c_master_write_to_device(I2C_MASTER_NUM, SERVO_I2C_ADDR, mode1_write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+
+    vTaskDelay(pdMS_TO_TICKS(1)); // Requires 500 us for the oscillator to startup
+
+    // Enable output on the servo driver
+    gpio_config_t output_enabled_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_OUTPUT_ENABLED_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false
+    };
+    gpio_config(&output_enabled_gpio_cfg);
+    gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, false); // Active low
+}
+
+void set_servo_channel_pulse(uint8_t chnl, uint16_t on_count, uint16_t off_count){
+    // Accepts the first 12 bits for the on and off counts and thus only the first 4
+    // bits are taken of the high byte.
+
+    uint8_t servo_pulse_cfg_write_buf[] = {
+        SERVO_LED0_ON_L_REG + 4 * chnl, // Determines starting register dynamically
+        on_count & 0xFF, // off low byte
+        (on_count & 0xF00) >> 8, // off high byte
+        off_count & 0xFF, // on low byte
+        (off_count & 0xF00) >> 8, // on high byte
+    };
+    i2c_master_write_to_device(I2C_MASTER_NUM, SERVO_I2C_ADDR, &servo_pulse_cfg_write_buf, 5, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
+}
+
+void set_servo_channel_pulse_width(uint8_t chnl, uint16_t servo_freq, double up_ms){
+    // Subtracts 1 as the counts are on a range of 0-4095 (total of 4096)
+    uint16_t off_counts = (up_ms / (1.0 / (double)servo_freq * 1e3)) * 4096 - 1;
+    set_servo_channel_pulse(chnl, 0, off_counts);
+}
+
+void test_servo_task(void *){
+   uint8_t servo_chnl = 3;
+   uint16_t servo_freq = 30;
+
+   setup_servo_driver(servo_freq);
+
+   set_servo_channel_pulse_width(servo_chnl, servo_freq, 1.5);
+   
+   bool min_pos = false;
+   while(1){
+        ESP_LOGI(SENSOR_TEST_TAG_NAME, "Setting servo channel at %s position", min_pos ? "minimum" : "maximum");
+
+        set_servo_channel_pulse_width(servo_chnl, servo_freq, min_pos ? 1.5 : 2);
+        min_pos = !min_pos;
+
+        vTaskDelay(pdMS_TO_TICKS(2000));
+   }
+
+}
 
 void app_main(void)
 {
@@ -573,4 +696,5 @@ void app_main(void)
     xTaskCreate(blink_task, "Blink", 4096, NULL, 0, NULL);
     xTaskCreate(test_read_sensors_task, "ReadSensorsTest", 4096, NULL, 0, NULL);
     xTaskCreate(test_stepper_task, "StepperTest", 4096, NULL, 0, NULL);
+    xTaskCreate(test_servo_task, "ServoTest", 4096, NULL, 0, NULL);
 }
