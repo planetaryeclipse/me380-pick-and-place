@@ -16,6 +16,11 @@
     "idf.toolsPath": "/home/samuel/.espressif",
     "idf.flashType": "UART",
     "files.associations": {
-        "esp_intr_alloc.h": "c"
+        "esp_intr_alloc.h": "c",
+        "ets_sys.h": "c",
+        "esp_intr_types.h": "c",
+        "comms.h": "c",
+        "task.h": "c",
+        "ultrasonic.h": "c"
     }
 }
