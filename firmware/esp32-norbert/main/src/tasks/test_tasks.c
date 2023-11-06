@@ -6,6 +6,7 @@
 
 #include "pinouts.h"
 #include "tasks/test_tasks.h"
+#include "sys_state.h"
 
 #include "sensors/color.h"
 #include "sensors/limit_swtch.h"
@@ -29,6 +30,9 @@ void test_blink_task(void *)
     bool enabled = true;
     while (1)
     {
+        if(sys_in_fault())
+            vTaskSuspend(NULL);
+
         // ESP_LOGI(BLINK_LOG_TAG, "Setting status LED to %s", enabled ? "ON" : "OFF");
         gpio_set_level(LED_STATUS_PIN, enabled);
         enabled = !enabled;
@@ -56,6 +60,9 @@ void test_read_sensors_task(void *)
 
     while (1)
     {
+        if(sys_in_fault())
+            vTaskSuspend(NULL);
+
         // Periodically read sensors
         read_color_sensor(&c, &r, &g, &b);
         ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
@@ -88,6 +95,9 @@ void test_servo_task(void *)
     bool min_pos = false;
     while (1)
     {
+        if(sys_in_fault())
+            vTaskSuspend(NULL);
+
         ESP_LOGI(TEST_SERVO_TAG_NAME, "Setting servo channel at %s position", min_pos ? "minimum" : "maximum");
 
         set_servo_channel_pulse_width(TEST_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? 1.5 : 2);
@@ -108,6 +118,9 @@ void test_stepper_task(void *)
 
     while (1)
     {
+        if(sys_in_fault())
+            vTaskSuspend(NULL);
+
         ESP_LOGI(STEPPER_LOG_TAG_NAME, "Sending steps!");
         rotate_stepper(TEST_STEPPER_STEPS, dir);
         dir = !dir;

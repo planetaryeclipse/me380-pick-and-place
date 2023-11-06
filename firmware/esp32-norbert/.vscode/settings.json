@@ -21,6 +21,7 @@
         "esp_intr_types.h": "c",
         "comms.h": "c",
         "task.h": "c",
-        "ultrasonic.h": "c"
+        "ultrasonic.h": "c",
+        "semphr.h": "c"
     }
 }

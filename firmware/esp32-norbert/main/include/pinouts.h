@@ -11,6 +11,9 @@
 // Status LED on development board
 #define LED_STATUS_PIN 2
 
+// Power pin from external 3v3 supply
+#define POWER_MNTR_PIN 15
+
 // Ultrasonic sensor - HC-SR04
 #define ULTRASONIC_TRIG_PIN 19
 #define ULTRASONIC_ECHO_PIN 18
