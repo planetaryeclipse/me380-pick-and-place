@@ -3,6 +3,9 @@
 #include "driver/gpio.h"
 #include "rom/ets_sys.h"
 #include "esp_log.h"
+#include "esp_timer.h"
+
+#include "freertos/queue.h"
 
 #include "pinouts.h"
 #include "tasks/test_tasks.h"
@@ -30,7 +33,7 @@ void test_blink_task(void *)
     bool enabled = true;
     while (1)
     {
-        if(sys_in_fault())
+        if (sys_in_fault())
             vTaskSuspend(NULL);
 
         // ESP_LOGI(BLINK_LOG_TAG, "Setting status LED to %s", enabled ? "ON" : "OFF");
@@ -60,24 +63,17 @@ void test_read_sensors_task(void *)
 
     while (1)
     {
-        if(sys_in_fault())
+        if (sys_in_fault())
             vTaskSuspend(NULL);
 
         // Periodically read sensors
         read_color_sensor(&c, &r, &g, &b);
-        ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
+        // ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
 
-        ultrasonic_dist = read_ultrasonic_distance();
-        ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
-
-        /*
-        Alternative polling code
-
-        trig_ultrasonic_scan();
-        while(xQueueReceive(ultrasonic_distances, &ultrasonic_dist, 0)){
-            ESP_LOGI(SENSOR_TEST_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
-        }
-        */
+        if (read_ultrasonic_distance(&ultrasonic_dist))
+            ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
+        else
+            ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Failed to read ultrasonic distance!");
 
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
@@ -95,10 +91,10 @@ void test_servo_task(void *)
     bool min_pos = false;
     while (1)
     {
-        if(sys_in_fault())
+        if (sys_in_fault())
             vTaskSuspend(NULL);
 
-        ESP_LOGI(TEST_SERVO_TAG_NAME, "Setting servo channel at %s position", min_pos ? "minimum" : "maximum");
+        // ESP_LOGI(TEST_SERVO_TAG_NAME, "Setting servo channel at %s position", min_pos ? "minimum" : "maximum");
 
         set_servo_channel_pulse_width(TEST_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? 1.5 : 2);
         min_pos = !min_pos;
@@ -118,10 +114,10 @@ void test_stepper_task(void *)
 
     while (1)
     {
-        if(sys_in_fault())
+        if (sys_in_fault())
             vTaskSuspend(NULL);
 
-        ESP_LOGI(STEPPER_LOG_TAG_NAME, "Sending steps!");
+        // ESP_LOGI(STEPPER_LOG_TAG_NAME, "Sending steps!");
         rotate_stepper(TEST_STEPPER_STEPS, dir);
         dir = !dir;
         vTaskDelay(pdMS_TO_TICKS(TEST_STEPPER_MS_BETWEEN_STEPS));

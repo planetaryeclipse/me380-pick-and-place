@@ -3,39 +3,48 @@
 
 #include "driver/gpio.h"
 #include "rom/ets_sys.h"
+#include "esp_log.h"
+#include "esp_timer.h"
 
 #include "pinouts.h"
 #include "sensors/ultrasonic.h"
 
+#define ULTRASONIC_LOG_TAG_NAME "sensor-ultrasonic"
+
+#define ULTRASONIC_TRIG_DURATION_US 10
+#define ULTRASONIC_DIST_TIMER_MAX 100000
+#define ULTRASONIC_GROUND_LEVEL_SOUND_VEL 336.1
+
+#define ULTRASONIC_QUEUE_SIZE 10
+#define ULTRASONIC_ECHO_TIMEOUT_MS 20
+
+static bool echo_up;
 static int64_t ultrasonic_echo_start_us;
 static QueueHandle_t ultrasonic_distances;
 
 void isr_ultrasonic_echo(void *arg)
 {
-    // Due to decreased allowable stack sizes in ISRs there is no possible way to output
-    // the distance value in this function. This is handled by the reading location.
-
     if (gpio_get_level(ULTRASONIC_ECHO_PIN))
     {
-        // Record time at the start of the echo pulse
+        echo_up = true;
         ultrasonic_echo_start_us = esp_timer_get_time();
     }
-    else if (ultrasonic_echo_start_us != -1)
+    else
     {
-        // Only calculates the distance if the positive edge was previously detected
-        // indicating a valid response (and the positive edge was not missed)
+        if (echo_up)
+        {
+            int64_t echo_duration_us = esp_timer_get_time() - ultrasonic_echo_start_us;
+            float dist = (float)echo_duration_us / 1e6 * (float)ULTRASONIC_GROUND_LEVEL_SOUND_VEL / 2.0;
 
-        int64_t fly_time_us = esp_timer_get_time() - ultrasonic_echo_start_us;
-        float dist = (float)fly_time_us / 1e6 * ULTRASONIC_GROUND_LEVEL_SOUND_VEL / 2.0;
-
-        xQueueSendFromISR(ultrasonic_distances, (void *)&dist, NULL);
-
-        ultrasonic_echo_start_us = -1; // Sets this interrupt to handled
+            xQueueSendFromISR(ultrasonic_distances, &dist, NULL);
+        }
+        echo_up = false;
     }
 }
 
 void setup_ultrasonic()
 {
+    echo_up = false;
     ultrasonic_echo_start_us = -1;
     ultrasonic_distances = xQueueCreate(ULTRASONIC_QUEUE_SIZE, sizeof(float));
 
@@ -59,16 +68,19 @@ void setup_ultrasonic()
 
 void trig_ultrasonic_scan()
 {
+    ESP_LOGI(ULTRASONIC_LOG_TAG_NAME, "Sending trigger pulse to ultrasonic sensor");
     gpio_set_level(ULTRASONIC_TRIG_PIN, true);
     ets_delay_us(ULTRASONIC_TRIG_DURATION_US);
     gpio_set_level(ULTRASONIC_TRIG_PIN, false);
 }
 
-float read_ultrasonic_distance()
+bool read_ultrasonic_distance(float *dist)
 {
     trig_ultrasonic_scan();
 
-    float dist = -1;
-    xQueueReceive(ultrasonic_distances, &dist, pdMS_TO_TICKS(ULTRASONIC_ECHO_TIMEOUT_MS));
-    return dist;
+    bool success_recv = false;
+    while (xQueueReceive(ultrasonic_distances, dist, pdMS_TO_TICKS(ULTRASONIC_ECHO_TIMEOUT_MS)))
+        success_recv = true;
+
+    return success_recv;
 }
