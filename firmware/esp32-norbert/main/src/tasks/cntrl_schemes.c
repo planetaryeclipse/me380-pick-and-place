@@ -157,6 +157,9 @@ void manual_cntrl_task(void *)
     set_servo_channel_pulse_width(PUSHOFF_SERVO2_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
     set_servo_channel_pulse_width(PUSHOFF_SERVO3_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
 
+    // All servos are allowed to take their positions (prevents weird glitches by doing it this way)
+    enable_servo_driver();
+
     // // Sets the lifting servos
     // set_servo_channel_pulse_width(ARM1_SERVO1_CHNL, SERVO_FREQ_HZ, ARM_SERVO_MIN_PULSE_MS);
     // set_servo_channel_pulse_width(ARM1_SERVO2_CHNL, SERVO_FREQ_HZ, ARM_SERVO_MIN_PULSE_MS);

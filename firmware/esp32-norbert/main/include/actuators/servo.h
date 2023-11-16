@@ -17,6 +17,7 @@
 #include "stdint.h"
 
 void setup_servo_driver(uint16_t freq);
+void enable_servo_driver();
 void set_servo_channel_pulse(uint8_t chnl, uint16_t on_count, uint16_t off_count);
 void set_servo_channel_pulse_width(uint8_t chnl, uint16_t servo_freq, double up_ms);
 

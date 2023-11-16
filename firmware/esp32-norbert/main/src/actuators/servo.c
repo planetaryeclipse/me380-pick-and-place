@@ -14,6 +14,16 @@
 
 void setup_servo_driver(uint16_t freq)
 {
+    // Disables output on the servo motor until desired to prevent weird glitches
+    gpio_config_t output_enabled_gpio_cfg = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = PIN_BITMASK(STEPPER_OUTPUT_ENABLED_PIN),
+        .pull_down_en = true,
+        .pull_up_en = false};
+    gpio_config(&output_enabled_gpio_cfg);
+    gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, true); // Active low
+
     // Enables sleep mode to change the prescale
     uint8_t mode1_write_buf[] = {
         SERVO_MODE1_REG,
@@ -41,15 +51,9 @@ void setup_servo_driver(uint16_t freq)
     i2c_master_write_to_device(I2C_MASTER_NUM, SERVO_I2C_ADDR, mode1_write_buf, 2, pdMS_TO_TICKS(I2C_MASTER_TIMEOUT_MS));
 
     vTaskDelay(pdMS_TO_TICKS(1)); // Requires 500 us for the oscillator to startup
+}
 
-    // Enable output on the servo driver
-    gpio_config_t output_enabled_gpio_cfg = {
-        .intr_type = GPIO_INTR_DISABLE,
-        .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = PIN_BITMASK(STEPPER_OUTPUT_ENABLED_PIN),
-        .pull_down_en = true,
-        .pull_up_en = false};
-    gpio_config(&output_enabled_gpio_cfg);
+void enable_servo_driver(){
     gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, false); // Active low
 }
 
