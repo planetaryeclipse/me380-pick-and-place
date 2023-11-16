@@ -4,7 +4,7 @@
 #define STEPPER_LOG_TAG_NAME "act-stepper"
 
 #define STEPPER_HIGH_PULSE_WIDTH_US 1000
-#define STEPPER_LOW_PULSE_WIDTH_US 1000
+#define STEPPER_LOW_PULSE_WIDTH_US 7000
 
 #include "stdint.h"
 

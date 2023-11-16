@@ -18,11 +18,11 @@ void setup_servo_driver(uint16_t freq)
     gpio_config_t output_enabled_gpio_cfg = {
         .intr_type = GPIO_INTR_DISABLE,
         .mode = GPIO_MODE_OUTPUT,
-        .pin_bit_mask = PIN_BITMASK(STEPPER_OUTPUT_ENABLED_PIN),
+        .pin_bit_mask = PIN_BITMASK(SERVO_OUTPUT_ENABLED_PIN),
         .pull_down_en = true,
         .pull_up_en = false};
     gpio_config(&output_enabled_gpio_cfg);
-    gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, true); // Active low
+    gpio_set_level(SERVO_OUTPUT_ENABLED_PIN, true); // Active low
 
     // Enables sleep mode to change the prescale
     uint8_t mode1_write_buf[] = {
@@ -54,7 +54,7 @@ void setup_servo_driver(uint16_t freq)
 }
 
 void enable_servo_driver(){
-    gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, false); // Active low
+    gpio_set_level(SERVO_OUTPUT_ENABLED_PIN, false); // Active low
 }
 
 #define ARM_SERVO_1_BIAS 0

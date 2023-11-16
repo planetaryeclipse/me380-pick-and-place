@@ -27,6 +27,9 @@
 #define ARM3_INNER_LIM_SWCH_PIN 16
 #define ARM3_OUTER_LIM_SWCH_PIN 4
 
+// Servo driver - PCA9685
+#define SERVO_OUTPUT_ENABLED_PIN 5
+
 // Stepper motor driver - A4988
 #define STEPPER_DIRECTION_PIN 26
 #define STEPPER_STEP_PIN  25
@@ -36,6 +39,5 @@
 #define STEPPER_MS2_PIN 12
 #define STEPPER_MS1_PIN 14
 #define STEPPER_ENABLE_PIN 27
-#define STEPPER_OUTPUT_ENABLED_PIN 5
 
 #endif // PINOUTS_H
