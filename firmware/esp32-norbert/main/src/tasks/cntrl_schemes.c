@@ -40,10 +40,10 @@
 #define PUSHOFF_SERVO_MIN_PULSE_MS 1.0
 #define PUSHOFF_SERVO_MAX_PULSE_MS 1.8
 
-#define ARM_SERVO_MIN_PULSE_MS (1.0+0.15)
+#define ARM_SERVO_MIN_PULSE_MS (0.8+0.15)
 #define ARM_SERVO_MAX_PULSE_MS (2.0)
 
-#define ARM_SERVO_2_MAX_PULSE_MS (2.0)
+#define ARM_SERVO_2_MAX_PULSE_MS (2.2)
 #define ARM_SERVO_2_MIN_PULSE_MS (1.0 + 0.15)
 
 static bool upd_cntrl_scheme_on_last_cmd;
