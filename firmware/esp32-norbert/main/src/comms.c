@@ -85,11 +85,11 @@ static inline void check_recv_buf_for_cmd()
             .steps = (recv_cmd_buf[11] << 8 | recv_cmd_buf[10])};
 
         // Displays the command values
-        ESP_LOGI(UART_COMMS_TAG_NAME, "Received command: toggle control: %s, activate sweep: %s, pushoff 1: %s, pushoff 2: %s, pushoff 3: %s, stepper dir: %s, arm 1 servo: %u, arm 2 servo: %u, arm 3 servo: %u, steps: %u",
-            cmd.toggle_control_mode ? "true" : "false", cmd.activate_sweep ? "true" : "false",
-            cmd.activate_pushoff_1 ? "true" : "false", cmd.activate_pushoff_2 ? "true" : "false",
-            cmd.activate_pushoff_3 ? "true" : "false", cmd.stepper_dir ? "true" : "false",
-            cmd.arm_1_servo, cmd.arm_2_servo, cmd.arm_3_servo, cmd.steps);
+        // ESP_LOGI(UART_COMMS_TAG_NAME, "Received command: toggle control: %s, activate sweep: %s, pushoff 1: %s, pushoff 2: %s, pushoff 3: %s, stepper dir: %s, arm 1 servo: %u, arm 2 servo: %u, arm 3 servo: %u, steps: %u",
+        //     cmd.toggle_control_mode ? "true" : "false", cmd.activate_sweep ? "true" : "false",
+        //     cmd.activate_pushoff_1 ? "true" : "false", cmd.activate_pushoff_2 ? "true" : "false",
+        //     cmd.activate_pushoff_3 ? "true" : "false", cmd.stepper_dir ? "true" : "false",
+        //     cmd.arm_1_servo, cmd.arm_2_servo, cmd.arm_3_servo, cmd.steps);
         xQueueSend(cmd_queue, &cmd, pdMS_TO_TICKS(50));
     } else {
         // ESP_LOGI(UART_COMMS_TAG_NAME, "Reached end of receive buffer without receiving command");

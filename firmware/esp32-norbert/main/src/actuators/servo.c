@@ -10,6 +10,8 @@
 #include "pinouts.h"
 #include "actuators/servo.h"
 
+#include "esp_log.h"
+
 void setup_servo_driver(uint16_t freq)
 {
     // Enables sleep mode to change the prescale
@@ -50,6 +52,10 @@ void setup_servo_driver(uint16_t freq)
     gpio_config(&output_enabled_gpio_cfg);
     gpio_set_level(STEPPER_OUTPUT_ENABLED_PIN, false); // Active low
 }
+
+#define ARM_SERVO_1_BIAS 0
+#define ARM_SERVO_2_BIAS 0
+#define ARM_SERVO_3_BIAS 0
 
 void set_servo_channel_pulse(uint8_t chnl, uint16_t on_count, uint16_t off_count)
 {

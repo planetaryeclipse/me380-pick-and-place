@@ -68,7 +68,7 @@ void test_read_sensors_task(void *)
 
         // Periodically read sensors
         read_color_sensor(&c, &r, &g, &b);
-        // ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
+        ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Color reading: c=%i r=%i g=%i b=%i", c, r, g, b);
 
         if (read_ultrasonic_distance(&ultrasonic_dist))
             ESP_LOGI(TEST_READ_SENSORS_TAG_NAME, "Ultrasonic distance: %f", ultrasonic_dist);
@@ -83,10 +83,31 @@ void test_read_sensors_task(void *)
 #define TEST_SERVO_CHNL 3
 #define TEST_SERVO_FREQ 30
 
+#define TEST_ARM1_SERVO_CHNL 0
+#define TEST_ARM2_SERVO_CHNL 1
+#define TEST_ARM3_SERVO_CHNL 15
+
+#define TEST_ARM_SERVO_LOW_MS 2.5
+#define TEST_ARM_SERVO_HIGH_MS 1
+
+#define TEST_ARM_SERVO_SYNC_POS 2.2 // with max of .8
+
+
 void test_servo_task(void *)
 {
+    ESP_LOGI(SERVO_LOG_TAG_NAME, "Setting up servos!");
+
     setup_servo_driver(TEST_SERVO_FREQ);
-    set_servo_channel_pulse_width(TEST_SERVO_CHNL, TEST_SERVO_FREQ, 1.5);
+
+    set_servo_channel_pulse_width(TEST_ARM1_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_HIGH_MS);
+    set_servo_channel_pulse_width(TEST_ARM2_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_HIGH_MS);
+    set_servo_channel_pulse_width(TEST_ARM3_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_HIGH_MS);
+
+    vTaskDelay(pdMS_TO_TICKS(500));
+
+    set_servo_channel_pulse_width(TEST_ARM1_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_LOW_MS);
+    set_servo_channel_pulse_width(TEST_ARM2_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_LOW_MS);
+    set_servo_channel_pulse_width(TEST_ARM3_SERVO_CHNL, TEST_SERVO_FREQ, TEST_ARM_SERVO_LOW_MS);
 
     bool min_pos = false;
     while (1)
@@ -96,7 +117,12 @@ void test_servo_task(void *)
 
         // ESP_LOGI(TEST_SERVO_TAG_NAME, "Setting servo channel at %s position", min_pos ? "minimum" : "maximum");
 
-        set_servo_channel_pulse_width(TEST_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? 1.5 : 2);
+        // set_servo_channel_pulse_width(TEST_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? 1.5 : 2);
+        
+        // set_servo_channel_pulse_width(TEST_ARM1_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? TEST_ARM_SERVO_LOW_MS : TEST_ARM_SERVO_HIGH_MS);
+        // set_servo_channel_pulse_width(TEST_ARM2_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? TEST_ARM_SERVO_LOW_MS : TEST_ARM_SERVO_HIGH_MS);
+        // set_servo_channel_pulse_width(TEST_ARM3_SERVO_CHNL, TEST_SERVO_FREQ, min_pos ? TEST_ARM_SERVO_LOW_MS : TEST_ARM_SERVO_HIGH_MS);
+        
         min_pos = !min_pos;
 
         vTaskDelay(pdMS_TO_TICKS(2000));
