@@ -21,7 +21,7 @@ void app_main(void)
 
     // Initializes test tasks
     
-    // xTaskCreate(test_blink_task, "Blink", 4096, NULL, 0, NULL);
+    xTaskCreate(test_blink_task, "Blink", 4096, NULL, 0, NULL);
     // xTaskCreate(test_read_sensors_task, "ReadSensorsTest", 4096, NULL, 0, NULL);
     // xTaskCreate(test_stepper_task, "StepperTest", 4096, NULL, 0, NULL);
     // xTaskCreate(test_servo_task, "ServoTest", 4096, NULL, 0, NULL);

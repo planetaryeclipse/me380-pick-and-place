@@ -163,7 +163,7 @@ MAX_ARM_SERVO_VAL = 65535
 ARM_SERVO_RATE_TOT_TIME = 2
 ARM_SERVO_RATE = MAX_ARM_SERVO_VAL / ARM_SERVO_RATE_TOT_TIME
 
-ROTATION_TOT_TIME = 4
+ROTATION_TOT_TIME = 1
 BASE_STEPS_PER_ROTATION = 200
 MICROSTEP = 1
 STEP_RATE = 200 / ROTATION_TOT_TIME
@@ -221,10 +221,10 @@ def update_norbert_control_from_controller(cntrl_read: ControllerRead, norbert_c
 
     # Handles stepped rotation by a set angle
     if not norbert_cntrl.right_trig_btn_curr_held and cntrl_read.button_right_trigger:
-        norbert_cntrl.curr_steps_to_take += BASE_STEPS_PER_ROTATION * MICROSTEP / 4
+        norbert_cntrl.curr_steps_to_take += BASE_STEPS_PER_ROTATION * MICROSTEP /3
         norbert_cntrl.stepper_dir = True
     if not norbert_cntrl.left_trig_btn_curr_held and cntrl_read.button_left_trigger:
-        norbert_cntrl.curr_steps_to_take += BASE_STEPS_PER_ROTATION * MICROSTEP / 4
+        norbert_cntrl.curr_steps_to_take += BASE_STEPS_PER_ROTATION * MICROSTEP / 3
         norbert_cntrl.stepper_dir = False
 
     if not norbert_cntrl.start_btn_curr_held and cntrl_read.button_start:
@@ -254,7 +254,14 @@ def update_norbert_control_from_controller(cntrl_read: ControllerRead, norbert_c
         norbert_cntrl.arm_1_servo = _clamp(norbert_cntrl.arm_1_servo, MIN_ARM_SERVO_VAL, MAX_ARM_SERVO_VAL)
         norbert_cntrl.arm_2_servo = _clamp(norbert_cntrl.arm_2_servo, MIN_ARM_SERVO_VAL, MAX_ARM_SERVO_VAL)
         norbert_cntrl.arm_3_servo = _clamp(norbert_cntrl.arm_3_servo, MIN_ARM_SERVO_VAL, MAX_ARM_SERVO_VAL)
-        
+
+    if cntrl_read.left_joy_horiz:
+        steps_per_sec = 60
+        steps_to_take = steps_per_sec * 0.05 * abs(cntrl_read.left_joy_horiz)
+
+        norbert_cntrl.stepper_dir = cntrl_read.left_joy_horiz > 0
+        norbert_cntrl.curr_steps_to_take = steps_to_take
+
 
     # Updates states for toggle implementation
     norbert_cntrl.a_btn_curr_held = cntrl_read.button_a

@@ -32,12 +32,12 @@
 
 // Stepper motor driver - A4988
 #define STEPPER_DIRECTION_PIN 26
-#define STEPPER_STEP_PIN  25
-#define STEPPER_SLEEP_PIN 33
-#define STEPPER_RESET_PIN 32
-#define STEPPER_MS3_PIN 13
-#define STEPPER_MS2_PIN 12
-#define STEPPER_MS1_PIN 14
+#define STEPPER_STEP_PIN 13
+// #define STEPPER_SLEEP_PIN 33
+// #define STEPPER_RESET_PIN 32
+// #define STEPPER_MS3_PIN 13
+// #define STEPPER_MS2_PIN 12
+// #define STEPPER_MS1_PIN 14
 #define STEPPER_ENABLE_PIN 27
 
 #endif // PINOUTS_H

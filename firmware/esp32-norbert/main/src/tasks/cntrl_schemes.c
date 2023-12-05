@@ -28,17 +28,20 @@
 #define ARM3_SERVO1_CHNL 4
 #define ARM3_SERVO2_CHNL 5
 
-#define CONVEYOR_SWEEP_SERVO_CHNL 6
-#define PUSHOFF_SERVO1_CHNL 7
-#define PUSHOFF_SERVO2_CHNL 8
-#define PUSHOFF_SERVO3_CHNL 9
+#define PUSHOFF_SERVO1_CHNL 6
+#define PUSHOFF_SERVO2_CHNL 7
+#define PUSHOFF_SERVO3_CHNL 8
+#define CONVEYOR_SWEEP_SERVO_CHNL 9
 
 // Minimum and maximum positions of various servos
 
 #define SERVO_FREQ_HZ 57
 
-#define PUSHOFF_SERVO_MIN_PULSE_MS 1.0
-#define PUSHOFF_SERVO_MAX_PULSE_MS 1.8
+#define CONVEYOR_SWEEP_MIN_PULSE_MS 1.0
+#define CONVEYOR_SWEEP_MAX_PULSE_MS 2.2
+
+#define PUSHOFF_SERVO_MIN_PULSE_MS 0.5
+#define PUSHOFF_SERVO_MAX_PULSE_MS 4.0 // so illegal
 
 #define ARM_SERVO_MIN_PULSE_MS (0.8+0.15)
 #define ARM_SERVO_MAX_PULSE_MS (2.0)
@@ -124,15 +127,13 @@ void setup_cntrl()
 //     }
 // }
 
-#define SERVO1_BIAS 0.0
+#define SERVO1_BIAS (-0.05)
 #define SERVO2_BIAS 0.0
 #define SERVO3_BIAS 0.095
 
 #define SERVO1_2_BIAS 0.12
-#define SERVO2_2_BIAS 0.097
+#define SERVO2_2_BIAS 0.15
 #define SERVO3_2_BIAS -0.015
-
-#define SERVO
 
 void manual_cntrl_task(void *)
 {
@@ -152,13 +153,15 @@ void manual_cntrl_task(void *)
 
 
     // Sets the non-lifting servos
-    set_servo_channel_pulse_width(CONVEYOR_SWEEP_SERVO_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
-    set_servo_channel_pulse_width(PUSHOFF_SERVO1_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
-    set_servo_channel_pulse_width(PUSHOFF_SERVO2_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
-    set_servo_channel_pulse_width(PUSHOFF_SERVO3_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MIN_PULSE_MS);
+    set_servo_channel_pulse_width(CONVEYOR_SWEEP_SERVO_CHNL, SERVO_FREQ_HZ, CONVEYOR_SWEEP_MIN_PULSE_MS); // Start in retracted position
+    set_servo_channel_pulse_width(PUSHOFF_SERVO1_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MAX_PULSE_MS);
+    set_servo_channel_pulse_width(PUSHOFF_SERVO2_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MAX_PULSE_MS);
+    set_servo_channel_pulse_width(PUSHOFF_SERVO3_CHNL, SERVO_FREQ_HZ, PUSHOFF_SERVO_MAX_PULSE_MS);
 
     // All servos are allowed to take their positions (prevents weird glitches by doing it this way)
     enable_servo_driver();
+
+    // setup_stepper(FULL_STEP);
 
     // // Sets the lifting servos
     // set_servo_channel_pulse_width(ARM1_SERVO1_CHNL, SERVO_FREQ_HZ, ARM_SERVO_MIN_PULSE_MS);
@@ -194,25 +197,25 @@ void manual_cntrl_task(void *)
             if (cmd.activate_sweep != prev_activate_sweep)
             {
                 ESP_LOGI(MANUAL_CNTRL_TAG_NAME, "Setting sweep mechanism: %s", cmd.activate_sweep ? "enabled" : "disabled");
-                set_servo_channel_pulse_width(CONVEYOR_SWEEP_SERVO_CHNL, SERVO_FREQ_HZ, cmd.activate_sweep ? PUSHOFF_SERVO_MAX_PULSE_MS : PUSHOFF_SERVO_MIN_PULSE_MS);
+                set_servo_channel_pulse_width(CONVEYOR_SWEEP_SERVO_CHNL, SERVO_FREQ_HZ, cmd.activate_sweep ? CONVEYOR_SWEEP_MAX_PULSE_MS : CONVEYOR_SWEEP_MIN_PULSE_MS);
                 prev_activate_sweep = cmd.activate_sweep;
             }
             if (cmd.activate_pushoff_1 != prev_activate_pushoff_1)
             {
                 ESP_LOGI(MANUAL_CNTRL_TAG_NAME, "Setting compartment 1 pushoff: %s", cmd.activate_pushoff_1 ? "enabled" : "disabled");
-                set_servo_channel_pulse_width(PUSHOFF_SERVO1_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_1 ? PUSHOFF_SERVO_MAX_PULSE_MS : PUSHOFF_SERVO_MIN_PULSE_MS);
+                set_servo_channel_pulse_width(PUSHOFF_SERVO1_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_1 ? PUSHOFF_SERVO_MIN_PULSE_MS : PUSHOFF_SERVO_MAX_PULSE_MS);
                 prev_activate_pushoff_1 = cmd.activate_pushoff_1;
             }
             if (cmd.activate_pushoff_2 != prev_activate_pushoff_2)
             {
                 ESP_LOGI(MANUAL_CNTRL_TAG_NAME, "Setting compartment 2 pushoff: %s", cmd.activate_pushoff_2 ? "enabled" : "disabled");
-                set_servo_channel_pulse_width(PUSHOFF_SERVO2_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_2 ? PUSHOFF_SERVO_MAX_PULSE_MS : PUSHOFF_SERVO_MIN_PULSE_MS);
+                set_servo_channel_pulse_width(PUSHOFF_SERVO2_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_2 ? PUSHOFF_SERVO_MIN_PULSE_MS : PUSHOFF_SERVO_MAX_PULSE_MS);
                 prev_activate_pushoff_2 = cmd.activate_pushoff_2;
             }
             if (cmd.activate_pushoff_3 != prev_activate_pushoff_3)
             {
                 ESP_LOGI(MANUAL_CNTRL_TAG_NAME, "Setting compartment 3 pushoff: %s", cmd.activate_pushoff_3 ? "enabled" : "disabled");
-                set_servo_channel_pulse_width(PUSHOFF_SERVO3_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_3 ? PUSHOFF_SERVO_MAX_PULSE_MS : PUSHOFF_SERVO_MIN_PULSE_MS);
+                set_servo_channel_pulse_width(PUSHOFF_SERVO3_CHNL, SERVO_FREQ_HZ, cmd.activate_pushoff_3 ? PUSHOFF_SERVO_MIN_PULSE_MS : PUSHOFF_SERVO_MAX_PULSE_MS);
                 prev_activate_pushoff_3 = cmd.activate_pushoff_3;
             }
 
