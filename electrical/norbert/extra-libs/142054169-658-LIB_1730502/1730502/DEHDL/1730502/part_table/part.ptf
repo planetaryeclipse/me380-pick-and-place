@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART '1730502'
+CLASS = IO
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "ARROW_PART_NUMBER", "ARROW_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Phoenix Contact", "1730502" (!) = "", "1730502", "Other", "651-1730502", "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1730502?qs=A%2FKWGUWTCZghhMrehBRnfA%3D%3D", "1730502", "https://www.arrow.com/en/products/1730502/phoenix-contact?region=nac", "PCB terminal block, nominal current: 24 A, rated voltage (III/2): 400 V, nominal cross section: 2.5 mm?, Number of potentials: 2, Number of rows: 1, Number of positions per row: 2, product range: MKDSD 2,5, pitch: 5.08 mm, connection method: Screw connection with tension sleeve, mounting: Wave soldering, conductor/PCB connection direction: 0 ?, color: green, Pin layout: Linear double pinning, Solder pin [P]: 3.7 mm, type of packaging: packed in cardboard", "http://www.phoenixcontact.com/de/produkte/1730502/pdf", "18.2 mm"
+END_PART
+
+END.

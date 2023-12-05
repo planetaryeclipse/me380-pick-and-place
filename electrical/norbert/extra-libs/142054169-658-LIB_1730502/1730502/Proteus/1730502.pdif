@@ -1,0 +1,126 @@
+;Proteus Design Interchange Format
+(PDIF
+ (vendor "SamacSys Limited")
+ (version 1 0)
+ (library
+  (part "1730502"
+   (description "PCB terminal block, nominal current: 24 A, rated voltage (III/2): 400 V, nominal cross section: 2.5 mm?, Number of potentials: 2, Number of rows: 1, Number of positions per row: 2, product range: MKDSD 2,5, pitch: 5.08 mm, connection method: Screw connection with tension sleeve, mounting: Wave soldering, conductor/PCB connection direction: 0 ?, color: green, Pin layout: Linear double pinning, Solder pin [P]: 3.7 mm, type of packaging: packed in cardboard")
+   (family "CON")
+   (package "1730502")
+   (attribute "Datasheet Link" "http://www.phoenixcontact.com/de/produkte/1730502/pdf")
+   (attribute "Geometry.Height" "18.2mm")
+   (attribute "Manufacturer_Name" "Phoenix Contact")
+   (attribute "Manufacturer_Part_Number" "1730502")
+   (attribute "Mouser Part Number" "651-1730502")
+   (attribute "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/1730502?qs=A%2FKWGUWTCZghhMrehBRnfA%3D%3D")
+   (attribute "Arrow Part Number" "1730502")
+   (attribute "Arrow Price/Stock" "https://www.arrow.com/en/products/1730502/phoenix-contact?region=nac")
+   (gate
+    (symbol "1730502")
+    (pin "1.1" 1 PS)
+    (pin "1.2" 2 PS)
+    (pin "2.1" 3 PS)
+    (pin "2.2" 4 PS)
+   )
+  )
+  (symbol "1730502"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 200 100) (pt 800 100) (pt 800 -200) (pt 200 -200) (pt 200 100) (closed))
+   )
+   (terminal
+    (body (symbol "PIN") (pt 0 -100) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 0 0) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 1000 -100) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 1000 0) (rot 0) (mir X) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+  )
+  (symbol "PIN"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 200 0))))
+  (symbol "PINSHORT"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 100 0))))
+  (package "1730502"
+   (units MM)
+   (layer TASM
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -3.13 9.07)
+      (pt 8.21 9.07)
+      (pt 8.21 -2.55)
+      (pt -3.13 -2.55)
+      (pt -3.13 9.07))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -3.13 9.07)
+      (pt 8.21 9.07)
+      (pt 8.21 -2.55)
+      (pt -3.13 -2.55)
+      (pt -3.13 9.07))))
+   (layer TSLK
+    (graphic
+     (stroke 0.2)
+     (circle
+      (pt -4.4 0) (pt -4.3 0)
+     )
+    )
+   )
+   (layer OCCA
+    (graphic
+     (stroke 0.05)
+     (path
+      (closed true)
+      (pt -5.25 10.07)
+      (pt 9.21 10.07)
+      (pt 9.21 -3.55)
+      (pt -5.25 -3.55)
+      (pt -5.25 10.07))))
+   (leg 1 (pt 0 0) (padstack 1))
+   (leg 2 (pt 0 7.55) (padstack 0))
+   (leg 3 (pt 5.08 0) (padstack 0))
+   (leg 4 (pt 5.08 7.55) (padstack 0))
+   (padstack 0
+    (hole 1.4)
+    (plated true)
+    (pad (layer TCOP) (round 2.1))
+    (pad (layer INNER) (round 2.1))
+    (pad (layer BCOP) (round 2.1))
+   )
+   (padstack 1
+    (hole 1.4)
+    (plated true)
+    (pad (layer TCOP) (square 2.1))
+    (pad (layer INNER) (round 2.1))
+    (pad (layer BCOP) (square 2.1))
+   )
+   (model "1730502.stp"
+    (euler 90 0 -90)
+    (offset -3.0799999237060547 9.069999694824219 0.550000011920929)
+   )
+  )
+ )
+)

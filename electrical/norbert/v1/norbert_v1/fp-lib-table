@@ -15,4 +15,6 @@
   (lib (name "ul_ADP1711AUJZ-0-75R7")(type "KiCad")(uri "/home/samuel/Documents/me380-pick-and-place/electrical/norbert/extra-libs/ul_ADP1711AUJZ-0-75R7/KiCADv6/footprints.pretty")(options "")(descr ""))
   (lib (name "ul_61300411121")(type "KiCad")(uri "/home/samuel/Documents/me380-pick-and-place/electrical/norbert/extra-libs/ul_61300411121/KiCADv6/footprints.pretty")(options "")(descr ""))
   (lib (name "extra_power")(type "KiCad")(uri "/home/samuel/Documents/me380-pick-and-place/electrical/norbert/extra-libs/extra_power/extra_power.pretty")(options "")(descr ""))
+  (lib (name "LIB_1730502")(type "KiCad")(uri "/home/samuel/Documents/me380-pick-and-place/electrical/norbert/extra-libs/142054169-658-LIB_1730502/1730502/KiCad")(options "")(descr ""))
+  (lib (name "LIB_5442248")(type "KiCad")(uri "/home/samuel/Documents/me380-pick-and-place/electrical/norbert/extra-libs/142054143-658-LIB_5442248/5442248/KiCad")(options "")(descr ""))
 )

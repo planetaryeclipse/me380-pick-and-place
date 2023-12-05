@@ -1,0 +1,85 @@
+.FILETYPE CELL_LIBRARY
+.VERSION "02.50"
+.DATE "Wednesday, November 15, 2023 09:28 PM"
+
+.UNITS MM
+
+.PACKAGE_CELL "5442248"
+ ..PACKAGE_GROUP CONNECTOR
+ ..MOUNT_TYPE THROUGH
+ ..NUMBER_LAYERS 12
+ ..PIN "1"
+  ...XY (0.000,0.000)
+  ...PADSTACK "s165h110"
+  ...ROTATION 0
+  ...PIN_OPTIONS NONE
+ ..PIN "2"
+  ...XY (3.500,0.000)
+  ...PADSTACK "c165h110"
+  ...ROTATION 0
+  ...PIN_OPTIONS NONE
+ ..TEXT "Ref Des"
+  ...TEXT_TYPE REF_DES
+  ...DISPLAY_ATTR
+   ....XY (1.750,0.050)
+   ....TEXT_LYR SILKSCREEN_MNT_LYR
+   ....DISPLAY_CONDITION ANY_MOUNT
+   ....HORZ_JUST LEFT
+   ....VERT_JUST BOTTOM
+   ....HEIGHT 1.27
+   ....WIDTH 0.127
+   ....STROKE_WIDTH 0.127
+   ....ROTATION 0
+   ....FONT "VeriBest Gerber 0"
+   ....TEXT_OPTIONS NONE
+ ..TEXT "Part No"
+  ...TEXT_TYPE PARTNO
+  ...DISPLAY_ATTR
+   ....XY (1.750,0.050)
+   ....TEXT_LYR ASSEMBLY_MNT_LYR
+   ....DISPLAY_CONDITION ANY_MOUNT
+   ....HORZ_JUST LEFT
+   ....VERT_JUST TOP
+   ....HEIGHT 1.27
+   ....WIDTH 0.127
+   ....STROKE_WIDTH 0.127
+   ....ROTATION 0
+   ....FONT "VeriBest Gerber 0"
+   ....TEXT_OPTIONS NONE
+ ..ASSEMBLY_OUTLINE
+  ...DISPLAY_WIDTH 0.2
+  ...OPTIONS NONE
+  ...SIDE MNT_SIDE
+  ...DISPLAY_CONDITION ANY_MOUNT
+  ...POLYLINE_PATH
+   ....WIDTH 0.2
+   ....XY (-2.000, 3.700)
+          (5.500, 3.700)
+          (5.500, -3.600)
+          (-2.000, -3.600)
+          (-2.000, 3.700)
+ ..SILKSCREEN_OUTLINE
+  ...OPTIONS NONE
+  ...SIDE MNT_SIDE
+  ...DISPLAY_CONDITION ANY_MOUNT
+  ...POLYLINE_PATH
+   ....WIDTH 0.1
+   ....XY (-2.000, 3.700)
+          (5.500, 3.700)
+          (5.500, -3.600)
+          (-2.000, -3.600)
+          (-2.000, 3.700)
+ ..PLACEMENT_OUTLINE
+  ...HEIGHT 8.65
+  ...UNDERSIDE_SPACE 0
+  ...DISPLAY_WIDTH 0
+  ...OPTIONS NONE
+  ...SIDE MNT_SIDE
+  ...DISPLAY_CONDITION ANY_MOUNT
+  ...POLYLINE_PATH
+   ....WIDTH 0.1
+   ....XY (-3.000, 4.700)
+          (6.500, 4.700)
+          (6.500, -4.600)
+          (-3.000, -4.600)
+          (-3.000, 4.700)

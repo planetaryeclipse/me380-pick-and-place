@@ -1,0 +1,106 @@
+;Proteus Design Interchange Format
+(PDIF
+ (vendor "SamacSys Limited")
+ (version 1 0)
+ (library
+  (part "5442248"
+   (description "Fixed Terminal Blocks BC-350X9- 2 GN 3.5 MM PITCH")
+   (family "CON")
+   (package "5442248")
+   (attribute "Datasheet Link" "http://www.phoenixcontact.net/product/5442248")
+   (attribute "Geometry.Height" "8.65mm")
+   (attribute "Manufacturer_Name" "Phoenix Contact")
+   (attribute "Manufacturer_Part_Number" "5442248")
+   (attribute "Mouser Part Number" "651-5442248")
+   (attribute "Mouser Price/Stock" "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/5442248?qs=9Y9qB%2FCsC3kNHrXWmi1dGA%3D%3D")
+   (attribute "Arrow Part Number" "5442248")
+   (attribute "Arrow Price/Stock" "https://www.arrow.com/en/products/5442248/phoenix-contact")
+   (gate
+    (symbol "5442248")
+    (pin "1" 1 PS)
+    (pin "2" 2 PS)
+   )
+  )
+  (symbol "5442248"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 200 100) (pt 600 100) (pt 600 -200) (pt 200 -200) (pt 200 100) (closed))
+   )
+   (terminal
+    (body (symbol "PIN") (pt 0 0) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+   (terminal
+    (body (symbol "PIN") (pt 0 -100) (rot 0) (mir 0) (visible true))
+    (name (pt 230 0) (rot 0) (just MIDDLE LEFT) (visible true))
+    (number (pt 140 20) (rot 0) (just BOTTOM RIGHT) (visible true)))
+  )
+  (symbol "PIN"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 200 0))))
+  (symbol "PINSHORT"
+   (units THOU)
+   (origin (pt 0 0))
+   (graphic
+    (stroke 10)
+    (path (pt 0 0) (pt 100 0))))
+  (package "5442248"
+   (units MM)
+   (layer TASM
+    (graphic
+     (stroke 0.2)
+     (path
+      (closed true)
+      (pt -2 3.7)
+      (pt 5.5 3.7)
+      (pt 5.5 -3.6)
+      (pt -2 -3.6)
+      (pt -2 3.7))))
+   (layer TSLK
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -2 3.7)
+      (pt 5.5 3.7)
+      (pt 5.5 -3.6)
+      (pt -2 -3.6)
+      (pt -2 3.7))))
+   (layer OCCA
+    (graphic
+     (stroke 0.1)
+     (path
+      (closed true)
+      (pt -3 4.7)
+      (pt 6.5 4.7)
+      (pt 6.5 -4.6)
+      (pt -3 -4.6)
+      (pt -3 4.7))))
+   (leg 1 (pt 0.000 0.000) (padstack 0))
+   (leg 2 (pt 3.500 0.000) (padstack 2))
+   (padstack 0
+    (hole 1.1)
+    (plated true)
+    (pad (layer TCOP) (square 1.650))
+    (pad (layer INNER) (round 1.650))
+    (pad (layer BCOP) (square 1.650))
+   )
+   (padstack 2
+    (hole 1.1)
+    (plated true)
+    (pad (layer TCOP) (round 1.650))
+    (pad (layer INNER) (round 1.650))
+    (pad (layer BCOP) (round 1.650))
+   )
+   (model "5442248.stp"
+    (euler 0 0 0)
+    (offset -2 -3.5999999046325684 0.12999999523162842)
+   )
+  )
+ )
+)

@@ -3147,7 +3147,7 @@
     (property "Value" "PHOENIX_CONT_2POS_1730502" (at 115.57 119.38 0)
       (effects (font (size 1.27 1.27)) (justify left))
     )
-    (property "Footprint" "" (at 110.49 118.11 0)
+    (property "Footprint" "LIB_1730502:1730502" (at 110.49 118.11 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "" (at 110.49 118.11 0)

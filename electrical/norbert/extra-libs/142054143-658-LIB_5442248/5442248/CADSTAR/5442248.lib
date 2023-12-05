@@ -1,0 +1,18 @@
+.5442248 :1 ;Fixed Terminal Blocks BC-350X9- 2 GN 3.5 MM PITCH
+"5442248"
+*STM J
+*NGS
+*PLB 1="1" 2="2"
+*MXP 2
+*DFN 5442248
+~!Manufacturer_Name (Phoenix Contact)
+~!Manufacturer_Part_Number (5442248)
+~!Mouser Part Number (651-5442248)
+~!Link Mouser Price/Stock (https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/5442248?qs=9Y9qB%2FCsC3kNHrXWmi1dGA%3D%3D)
+~!Arrow Part Number (5442248)
+~!Link Arrow Price/Stock (https://www.arrow.com/en/products/5442248/phoenix-contact)
+~!Link Datasheet (http://www.phoenixcontact.net/product/5442248)
+~!Height (8.65mm)
+~!3D_Model (5442248)
+"5442248"
+1.1!U 2.1!U 

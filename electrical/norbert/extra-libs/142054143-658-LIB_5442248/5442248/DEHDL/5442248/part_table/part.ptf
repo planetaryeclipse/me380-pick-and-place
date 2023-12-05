@@ -1,0 +1,11 @@
+FILE_TYPE = MULTI_PHYS_TABLE;
+
+PART '5442248'
+CLASS = IO
+{========================================================================================}
+:"MANUFACTURER_NAME", "MANUFACTURER_PART_NUMBER"= "PART_NUMBER", "JEDEC_TYPE", "PACK_TYPE", "MOUSER_PART_NUMBER", "MOUSER_PRICE/STOCK", "ARROW_PART_NUMBER", "ARROW_PRICE/STOCK", "DESCRIPTION", "DATASHEET", "HEIGHT";
+{========================================================================================}
+ "Phoenix Contact", "5442248" (!) = "", "5442248", "Other", "651-5442248", "https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/5442248?qs=9Y9qB%2FCsC3kNHrXWmi1dGA%3D%3D", "5442248", "https://www.arrow.com/en/products/5442248/phoenix-contact", "Fixed Terminal Blocks BC-350X9- 2 GN 3.5 MM PITCH", "http://www.phoenixcontact.net/product/5442248", "8.65 mm"
+END_PART
+
+END.

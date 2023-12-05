@@ -1,0 +1,39 @@
+.Filetype ASCII_PDB
+.Version "02.01"
+.Units MM
+.Notation SI
+
+.Job "1669597/506064/2.50/2/2/Connector"
+.Creator "SamacSys ECAD Model 5442248"
+.Number "5442248"
+	..Name "5442248"
+		...Default
+	..Label "5442248"
+		...Default
+	..Desc "Fixed Terminal Blocks BC-350X9- 2 GN 3.5 MM PITCH"
+	..RefPrefix "J"
+	..TopCell "5442248"
+	..BottomCell ""
+	..Prop "Type",	"Connector",	"Text"
+	..Prop "Manufacturer_Name",	"Phoenix Contact",	"Text"
+	..Prop "Manufacturer_Part_Number",	"5442248",	"Text"
+	..Prop "Mouser Part Number",	"651-5442248",	"Text"
+	..Prop "Mouser Price/Stock",	"https://www.mouser.co.uk/ProductDetail/Phoenix-Contact/5442248?qs=9Y9qB%2FCsC3kNHrXWmi1dGA%3D%3D",	"Text"
+	..Prop "Arrow Part Number",	"5442248",	"Text"
+	..Prop "Arrow Price/Stock",	"https://www.arrow.com/en/products/5442248/phoenix-contact",	"Text"
+	..Prop "Description",	"Fixed Terminal Blocks BC-350X9- 2 GN 3.5 MM PITCH",	"Text"
+	..Prop "Datasheet Link",	"http://www.phoenixcontact.net/product/5442248",	"Text"
+	..Prop "Height",	"8.65",	"Real"
+	..SwapGroup	"gate1"
+		...SwapID	"P0"
+		...SwapID	"P1"
+	..Symbol	"SamacSys:5442248"
+		...Symbol_SwapGroup	"gate1"
+			....PinName	"1"
+			....PinName	"2"
+	..Slots
+		...Slot_SwapGroup	"gate1"
+			....SlotID	1
+			....SwapCode	0
+			....PinNumber	"1"
+			....PinNumber	"2"

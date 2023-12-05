@@ -1,0 +1,9 @@
+Manufacturer=Phoenix Contact
+PartNumber=5442248
+PartCategory=Connector
+PackageCategory=Other
+PinCount=2
+Version=2.1
+Released=2019-05-28 10:39:14
+Downloaded=2023-11-15 21:28:00
+3D=Y

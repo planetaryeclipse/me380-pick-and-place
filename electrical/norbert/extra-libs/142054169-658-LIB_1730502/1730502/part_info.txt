@@ -1,0 +1,9 @@
+Manufacturer=Phoenix Contact
+PartNumber=1730502
+PartCategory=Connector
+PackageCategory=Other
+PinCount=4
+Version=2.1
+Released=2021-12-30 17:30:59
+Downloaded=2023-11-15 21:29:47
+3D=Y
